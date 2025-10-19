@@ -3,7 +3,7 @@ from pathlib import Path
 
 from app.core.database import SessionLocal
 from app.services.backup_service import BackupService
-from app.tasks.worker import celery_app
+from app.celery_tasks.worker import celery_app
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.review import ReviewStatus, ReviewType
-from app.schemas.review import (
+from app.schemas.review_schema import (
     Review,
     ReviewComment,
     ReviewCommentCreate,

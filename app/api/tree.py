@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.task import TaskType
-from app.schemas.task import TaskDetail, TaskLightweight, TaskTree
+from app.schemas.task_schema import TaskDetail, TaskLightweight, TaskTree
 from app.services.cas_service import CASService
 from app.services.task_service import TaskService
 

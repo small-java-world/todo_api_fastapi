@@ -28,7 +28,7 @@ services:
     depends_on:
       - redis
       - todo-api
-    command: celery -A app.tasks.worker worker -l info
+    command: celery -A app.celery_tasks.worker worker -l info
 
   celery-flower:
     build: .
@@ -40,7 +40,7 @@ services:
       - .:/app
     depends_on:
       - redis
-    command: celery -A app.tasks.worker flower --port=5555
+    command: celery -A app.celery_tasks.worker flower --port=5555
 
 volumes:
   redis_data:

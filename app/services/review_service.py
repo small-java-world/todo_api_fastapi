@@ -11,7 +11,7 @@ from app.models.review import (
     ReviewStatus,
     ReviewType,
 )
-from app.schemas.review import (
+from app.schemas.review_schema import (
     ReviewCommentCreate,
     ReviewCreate,
     ReviewDetail,

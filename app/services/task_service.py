@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.models.comment import Comment as CommentModel
 from app.models.task import Task, TaskType
 from app.models.task_history import TaskHistory as TaskHistoryModel
-from app.schemas.task import (
+from app.schemas.task_schema import (
     Comment,
     CommentCreate,
     StatusTransition,

@@ -7,7 +7,7 @@ celery_app = Celery(
     "todo_api",
     broker=settings.redis_url,
     backend=settings.redis_url,
-    include=["app.tasks.tasks", "app.tasks.backup_tasks"],
+    include=["app.celery_tasks.tasks", "app.celery_tasks.backup_tasks"],
 )
 
 # Celery設定

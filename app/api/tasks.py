@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.task import TaskType
-from app.schemas.task import (
+from app.schemas.task_schema import (
     Comment,
     CommentCreate,
     RequirementCreate,
