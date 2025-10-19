@@ -74,9 +74,21 @@ jobs:
       run: |
         alembic upgrade head || echo "Migration failed, but continuing..."
 
+    - name: Check test files exist
+      run: |
+        echo "Checking for test files..."
+        ls -la tests/ || echo "tests/ directory not found"
+        find . -name "test_*.py" -type f | head -10 || echo "No test files found"
+
     - name: Run integration tests
       run: |
-        pytest tests/test_*_integration.py -v --cov=app --cov-report=xml --cov-report=html --junitxml=integration-test-results.xml
+        if [ -d "tests" ]; then
+          echo "Running integration tests from tests/ directory..."
+          pytest tests/ -k "integration" -v --cov=app --cov-report=xml --cov-report=html --junitxml=integration-test-results.xml
+        else
+          echo "tests/ directory not found, looking for integration test files in current directory..."
+          pytest . -k "integration" -v --cov=app --cov-report=xml --cov-report=html --junitxml=integration-test-results.xml
+        fi
 
     - name: Run specific integration test categories
       run: |
