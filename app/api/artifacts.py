@@ -153,7 +153,7 @@ def delete_artifact(sha256_hash: str, db: Session = Depends(get_db)):
 )
 def create_task_summary(summary: TaskSummaryCreate, db: Session = Depends(get_db)):
     """タスクサマリーを作成"""
-    from app.models.artifact import TaskSummary as TaskSummaryModel
+    from app.models.artifact_model import TaskSummary as TaskSummaryModel
 
     # 既存のサマリーをチェック
     existing = (
@@ -185,7 +185,7 @@ def create_task_summary(summary: TaskSummaryCreate, db: Session = Depends(get_db
 @summaries_router.get("/{task_hid}", response_model=TaskSummary)
 def get_task_summary(task_hid: str, db: Session = Depends(get_db)):
     """タスクサマリーを取得"""
-    from app.models.artifact import TaskSummary as TaskSummaryModel
+    from app.models.artifact_model import TaskSummary as TaskSummaryModel
 
     summary = (
         db.query(TaskSummaryModel).filter(TaskSummaryModel.task_hid == task_hid).first()
@@ -201,7 +201,7 @@ def get_task_summary(task_hid: str, db: Session = Depends(get_db)):
 @summaries_router.get("/{task_hid}/outline", response_model=OutlineCard)
 def get_task_outline(task_hid: str, db: Session = Depends(get_db)):
     """タスクのアウトラインカードを取得"""
-    from app.models.artifact import TaskSummary as TaskSummaryModel
+    from app.models.artifact_model import TaskSummary as TaskSummaryModel
 
     # タスク情報を取得
     task_service = TaskService(db)

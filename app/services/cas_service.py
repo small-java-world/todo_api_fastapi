@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.models.artifact import Artifact, TaskArtifactLink
+from app.models.artifact_model import Artifact, TaskArtifactLink
 
 logger = logging.getLogger(__name__)
 
