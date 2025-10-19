@@ -1,6 +1,7 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, ConfigDict
 
 
 class ArtifactCreate(BaseModel):
@@ -12,7 +13,7 @@ class ArtifactCreate(BaseModel):
 
 class ArtifactInfo(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     sha256: str
     media_type: str
     bytes_size: int
@@ -30,7 +31,7 @@ class TaskArtifactLinkCreate(BaseModel):
 
 class TaskArtifactLink(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     task_hid: str
     role: str
@@ -50,7 +51,7 @@ class TaskSummaryCreate(BaseModel):
 
 class TaskSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     task_hid: str
     summary_140: str

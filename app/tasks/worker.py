@@ -1,4 +1,5 @@
 from celery import Celery
+
 from app.core.config import settings
 
 # Celeryアプリケーションの作成
@@ -6,7 +7,7 @@ celery_app = Celery(
     "todo_api",
     broker=settings.redis_url,
     backend=settings.redis_url,
-    include=["app.tasks.tasks", "app.tasks.backup_tasks"]
+    include=["app.tasks.tasks", "app.tasks.backup_tasks"],
 )
 
 # Celery設定

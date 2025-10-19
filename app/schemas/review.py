@@ -1,6 +1,8 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict
+
 from app.models.review import ReviewStatus, ReviewType
 
 
@@ -37,7 +39,7 @@ class ReviewCommentCreate(BaseModel):
 
 class ReviewComment(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     review_id: int
     comment_type: str
@@ -57,7 +59,7 @@ class ReviewResponseCreate(BaseModel):
 
 class ReviewResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     review_id: int
     comment_id: Optional[int] = None
@@ -70,7 +72,7 @@ class ReviewResponse(BaseModel):
 
 class Review(ReviewBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     task_id: int
     status: ReviewStatus
@@ -84,14 +86,16 @@ class Review(ReviewBase):
 
 class ReviewDetail(Review):
     """レビューの詳細情報（コメントとレスポンスを含む）"""
+
     comments: Optional[List[ReviewComment]] = None
     responses: Optional[List[ReviewResponse]] = None
 
 
 class ReviewSummary(BaseModel):
     """レビューのサマリー情報"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     task_id: int
     review_type: ReviewType
@@ -107,19 +111,20 @@ class ReviewSummary(BaseModel):
 
 class ReviewTimeline(BaseModel):
     """レビューのタイムライン情報"""
+
     review_id: int
     task_id: int
     review_type: ReviewType
     status: ReviewStatus
     title: str
     reviewer: Optional[str] = None
-    
+
     # タイムライン
     created_at: datetime
     review_started_at: Optional[datetime] = None
     review_completed_at: Optional[datetime] = None
     response_completed_at: Optional[datetime] = None
-    
+
     # 期間計算
     review_duration: Optional[int] = None  # レビュー実施期間（秒）
     response_duration: Optional[int] = None  # レビュー対応期間（秒）
@@ -128,17 +133,18 @@ class ReviewTimeline(BaseModel):
 
 class ReviewStatistics(BaseModel):
     """レビュー統計情報"""
+
     total_reviews: int
     pending_reviews: int
     in_progress_reviews: int
     completed_reviews: int
     rejected_reviews: int
     cancelled_reviews: int
-    
+
     # 平均期間
     avg_review_duration: Optional[float] = None  # 平均レビュー実施期間（秒）
     avg_response_duration: Optional[float] = None  # 平均レビュー対応期間（秒）
     avg_total_duration: Optional[float] = None  # 平均総期間（秒）
-    
+
     # レビュータイプ別統計
     review_type_stats: dict = {}

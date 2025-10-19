@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum
+import enum
+
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from app.core.database import Base
-import enum
 
 
 class ReviewStatus(str, enum.Enum):
@@ -34,14 +36,14 @@ class Review(Base):
     review_notes = Column(Text, nullable=True)  # レビューコメント
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
+
     # レビュー開始日時
     review_started_at = Column(DateTime(timezone=True), nullable=True)
     # レビュー完了日時
     review_completed_at = Column(DateTime(timezone=True), nullable=True)
     # レビュー対応完了日時
     response_completed_at = Column(DateTime(timezone=True), nullable=True)
-    
+
     # リレーションシップ
     task = relationship("Task", backref="reviews")
 
@@ -51,13 +53,17 @@ class ReviewComment(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     review_id = Column(Integer, ForeignKey("reviews.id"), nullable=False)
-    comment_type = Column(String(50), nullable=False)  # "question", "suggestion", "issue", "approval"
+    comment_type = Column(
+        String(50), nullable=False
+    )  # "question", "suggestion", "issue", "approval"
     content = Column(Text, nullable=False)
     line_number = Column(Integer, nullable=True)  # コード行番号（コードレビューの場合）
-    file_path = Column(String(500), nullable=True)  # ファイルパス（コードレビューの場合）
+    file_path = Column(
+        String(500), nullable=True
+    )  # ファイルパス（コードレビューの場合）
     author = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+
     # リレーションシップ
     review = relationship("Review", backref="comments")
 
@@ -67,15 +73,19 @@ class ReviewResponse(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     review_id = Column(Integer, ForeignKey("reviews.id"), nullable=False)
-    comment_id = Column(Integer, ForeignKey("review_comments.id"), nullable=True)  # 特定のコメントへの返信
-    response_type = Column(String(50), nullable=False)  # "acknowledgment", "fix", "discussion", "rejection"
+    comment_id = Column(
+        Integer, ForeignKey("review_comments.id"), nullable=True
+    )  # 特定のコメントへの返信
+    response_type = Column(
+        String(50), nullable=False
+    )  # "acknowledgment", "fix", "discussion", "rejection"
     content = Column(Text, nullable=False)
     author = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    
+
     # 対応完了日時
     response_completed_at = Column(DateTime(timezone=True), nullable=True)
-    
+
     # リレーションシップ
     review = relationship("Review", backref="responses")
     comment = relationship("ReviewComment", backref="responses")

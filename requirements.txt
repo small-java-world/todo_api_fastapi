@@ -11,3 +11,8 @@ httpx
 pytest
 pytest-asyncio
 flower
+black
+isort
+flake8
+mypy
+bandit

@@ -1,6 +1,8 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, ConfigDict
+
 from app.models.task import TaskType
 
 
@@ -16,6 +18,7 @@ class TaskCreate(TaskBase):
 
 class RequirementCreate(TaskBase):
     """要件作成用のスキーマ（typeとparent_idは自動設定）"""
+
     pass
 
 
@@ -27,7 +30,7 @@ class TaskUpdate(BaseModel):
 
 class Task(TaskBase):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     hierarchical_id: str
     type: TaskType
@@ -40,7 +43,7 @@ class Task(TaskBase):
 # 軽量レスポンス用スキーマ
 class TaskSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     hierarchical_id: str
     title: str
@@ -51,7 +54,7 @@ class TaskSummary(BaseModel):
 
 class RequirementSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     hierarchical_id: str
     title: str
@@ -60,7 +63,7 @@ class RequirementSummary(BaseModel):
 
 class SubtaskSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     hierarchical_id: str
     title: str
@@ -95,7 +98,7 @@ class CommentCreate(BaseModel):
 
 class Comment(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     task_id: int
     type: str
@@ -107,7 +110,7 @@ class Comment(BaseModel):
 # 履歴用スキーマ
 class TaskHistory(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     task_id: int
     event_type: str
@@ -121,7 +124,7 @@ class TaskHistory(BaseModel):
 # 軽量化されたレスポンス用スキーマ
 class TaskLightweight(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     hierarchical_id: str
     type: TaskType
@@ -133,7 +136,7 @@ class TaskLightweight(BaseModel):
 
 class TaskDetail(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     hierarchical_id: str
     type: TaskType
@@ -154,7 +157,7 @@ class TaskTree(BaseModel):
     title: str
     type: TaskType
     status: str
-    children: List['TaskTree'] = []
+    children: List["TaskTree"] = []
 
 
 # 自己参照のための前方宣言

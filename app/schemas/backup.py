@@ -1,17 +1,22 @@
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BackupCreate(BaseModel):
     """バックアップ作成リクエスト"""
-    backup_name: Optional[str] = Field(None, description="バックアップ名（指定しない場合は自動生成）")
+
+    backup_name: Optional[str] = Field(
+        None, description="バックアップ名（指定しない場合は自動生成）"
+    )
 
 
 class BackupResponse(BaseModel):
     """バックアップ作成レスポンス"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     backup_name: str
     backup_path: str
     created_at: str
@@ -20,8 +25,9 @@ class BackupResponse(BaseModel):
 
 class BackupInfo(BaseModel):
     """バックアップ情報"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     backup_name: str
     backup_path: str
     size: int
@@ -34,8 +40,9 @@ class BackupInfo(BaseModel):
 
 class BackupList(BaseModel):
     """バックアップ一覧"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     backup_name: str
     created_at: Optional[str] = None
     backup_type: str = "full"
@@ -44,13 +51,15 @@ class BackupList(BaseModel):
 
 class BackupRestore(BaseModel):
     """バックアップ復元リクエスト"""
+
     backup_name: str = Field(..., description="復元するバックアップ名")
 
 
 class BackupRestoreResponse(BaseModel):
     """バックアップ復元レスポンス"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     backup_name: str
     status: str
     restored_at: Optional[str] = None
@@ -59,8 +68,9 @@ class BackupRestoreResponse(BaseModel):
 
 class BackupDeleteResponse(BaseModel):
     """バックアップ削除レスポンス"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     backup_name: str
     status: str
     deleted_at: Optional[str] = None
@@ -69,13 +79,15 @@ class BackupDeleteResponse(BaseModel):
 
 class BackupCleanup(BaseModel):
     """バックアップクリーンアップリクエスト"""
+
     days_to_keep: int = Field(30, ge=1, le=365, description="保持する日数（1-365日）")
 
 
 class BackupCleanupResponse(BaseModel):
     """バックアップクリーンアップレスポンス"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     deleted_count: int
     errors: List[str] = []
     status: str
@@ -83,8 +95,9 @@ class BackupCleanupResponse(BaseModel):
 
 class BackupStatistics(BaseModel):
     """バックアップ統計情報"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     total_backups: int
     total_size: int
     oldest_backup: Optional[str] = None
@@ -94,8 +107,9 @@ class BackupStatistics(BaseModel):
 
 class BackupFile(BaseModel):
     """バックアップファイル情報"""
+
     model_config = ConfigDict(from_attributes=True)
-    
+
     name: str
     path: str
     size: int
