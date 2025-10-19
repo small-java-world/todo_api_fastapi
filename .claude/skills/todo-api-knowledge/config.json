@@ -1,0 +1,22 @@
+{
+  "api": {
+    "base_url": "http://localhost:8000",
+    "host": "localhost",
+    "port": 8000,
+    "timeout": 30
+  },
+  "environments": {
+    "local": {
+      "base_url": "http://localhost:8000"
+    },
+    "development": {
+      "base_url": "http://localhost:9000"
+    },
+    "staging": {
+      "base_url": "http://staging-server:8000"
+    },
+    "production": {
+      "base_url": "http://production-server:8000"
+    }
+  }
+}

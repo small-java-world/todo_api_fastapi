@@ -1,0 +1,302 @@
+{
+  "examples": {
+    "requirement_creation": {
+      "description": "要件作成の例",
+      "method": "POST",
+      "endpoint": "/tasks/requirements/",
+      "request_body": {
+        "title": "ユーザー認証要件",
+        "description": "ユーザーのログイン・ログアウト機能を実装する"
+      },
+      "response_example": {
+        "id": 1,
+        "hierarchical_id": "REQ-001",
+        "title": "ユーザー認証要件",
+        "description": "ユーザーのログイン・ログアウト機能を実装する",
+        "type": "requirement",
+        "status": "not_started",
+        "parent_id": null,
+        "created_at": "2025-10-19T04:56:36",
+        "updated_at": null
+      }
+    },
+    "task_creation": {
+      "description": "タスク作成の例",
+      "method": "POST",
+      "endpoint": "/tasks/",
+      "request_body": {
+        "title": "ログインAPI実装",
+        "description": "JWT認証を使用したログインAPIを実装する",
+        "type": "task",
+        "parent_id": 1
+      },
+      "response_example": {
+        "id": 2,
+        "hierarchical_id": "REQ-001.TSK-001",
+        "title": "ログインAPI実装",
+        "description": "JWT認証を使用したログインAPIを実装する",
+        "type": "task",
+        "status": "not_started",
+        "parent_id": 1,
+        "created_at": "2025-10-19T04:57:00",
+        "updated_at": null
+      }
+    },
+    "subtask_creation": {
+      "description": "サブタスク作成の例",
+      "method": "POST",
+      "endpoint": "/tasks/",
+      "request_body": {
+        "title": "パスワードハッシュ化実装",
+        "description": "bcryptを使用したパスワードハッシュ化を実装する",
+        "type": "subtask",
+        "parent_id": 2
+      },
+      "response_example": {
+        "id": 3,
+        "hierarchical_id": "REQ-001.TSK-001.SUB-001",
+        "title": "パスワードハッシュ化実装",
+        "description": "bcryptを使用したパスワードハッシュ化を実装する",
+        "type": "subtask",
+        "status": "not_started",
+        "parent_id": 2,
+        "created_at": "2025-10-19T04:57:30",
+        "updated_at": null
+      }
+    },
+    "review_creation": {
+      "description": "レビュー作成の例",
+      "method": "POST",
+      "endpoint": "/reviews/",
+      "request_body": {
+        "target_type": "requirement",
+        "target_id": 1,
+        "review_type": "requirement_review",
+        "title": "要件レビュー",
+        "description": "要件の妥当性をレビューする",
+        "reviewer": "reviewer_name"
+      },
+      "response_example": {
+        "id": 1,
+        "target_type": "requirement",
+        "target_id": 1,
+        "review_type": "requirement_review",
+        "title": "要件レビュー",
+        "description": "要件の妥当性をレビューする",
+        "reviewer": "reviewer_name",
+        "status": "open",
+        "created_at": "2025-10-19T05:00:00"
+      }
+    },
+    "backup_creation": {
+      "description": "バックアップ作成の例",
+      "method": "POST",
+      "endpoint": "/backup/",
+      "request_body": {
+        "backup_name": "manual_backup_20251019"
+      },
+      "response_example": {
+        "id": 1,
+        "backup_name": "manual_backup_20251019",
+        "backup_path": "backups/manual_backup_20251019.json",
+        "created_at": "2025-10-19T05:30:00",
+        "size_bytes": 12345,
+        "status": "completed"
+      }
+    },
+    "task_status_values": {
+      "description": "タスクステータスの有効な値",
+      "values": [
+        "not_started",
+        "in_progress",
+        "completed",
+        "blocked",
+        "cancelled"
+      ]
+    },
+    "task_types": {
+      "description": "タスクタイプの有効な値",
+      "values": [
+        "requirement",
+        "task",
+        "subtask"
+      ]
+    },
+    "review_types": {
+      "description": "レビュータイプの有効な値",
+      "values": [
+        "requirement_review",
+        "task_review",
+        "subtask_review",
+        "code_review",
+        "test_review"
+      ]
+    },
+    "review_status_values": {
+      "description": "レビューステータスの有効な値",
+      "values": [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed"
+      ]
+    },
+    "comment_types": {
+      "description": "コメントタイプの有効な値",
+      "values": [
+        "question",
+        "suggestion",
+        "issue",
+        "approval",
+        "general"
+      ]
+    }
+  },
+  "common_workflows": {
+    "create_requirement_with_tasks": {
+      "description": "要件とタスクを作成する完全なワークフロー",
+      "steps": [
+        {
+          "step": 1,
+          "action": "要件作成",
+          "method": "POST",
+          "endpoint": "/tasks/requirements/",
+          "body": {
+            "title": "ユーザー管理機能",
+            "description": "ユーザーの登録・編集・削除機能を実装"
+          }
+        },
+        {
+          "step": 2,
+          "action": "タスク作成（要件IDを使用）",
+          "method": "POST",
+          "endpoint": "/tasks/",
+          "body": {
+            "title": "ユーザー登録API",
+            "type": "task",
+            "parent_id": "<requirement_id_from_step_1>"
+          }
+        },
+        {
+          "step": 3,
+          "action": "サブタスク作成（タスクIDを使用）",
+          "method": "POST",
+          "endpoint": "/tasks/",
+          "body": {
+            "title": "メールアドレス検証",
+            "type": "subtask",
+            "parent_id": "<task_id_from_step_2>"
+          }
+        }
+      ]
+    },
+    "review_workflow": {
+      "description": "レビューワークフロー",
+      "steps": [
+        {
+          "step": 1,
+          "action": "レビュー作成",
+          "method": "POST",
+          "endpoint": "/reviews/",
+          "body": {
+            "target_type": "requirement",
+            "target_id": 1,
+            "review_type": "requirement_review",
+            "title": "要件レビュー",
+            "reviewer": "reviewer_name"
+          }
+        },
+        {
+          "step": 2,
+          "action": "コメント追加",
+          "method": "POST",
+          "endpoint": "/reviews/{review_id}/comments",
+          "body": {
+            "content": "セキュリティ要件を追加すべき",
+            "comment_type": "suggestion"
+          }
+        },
+        {
+          "step": 3,
+          "action": "対応記録",
+          "method": "POST",
+          "endpoint": "/reviews/{review_id}/comments/{comment_id}/respond",
+          "body": {
+            "response": "セキュリティ要件を追加しました"
+          }
+        },
+        {
+          "step": 4,
+          "action": "レビュー解決",
+          "method": "PUT",
+          "endpoint": "/reviews/{review_id}/resolve"
+        }
+      ]
+    },
+    "backup_and_restore": {
+      "description": "バックアップと復元のワークフロー",
+      "steps": [
+        {
+          "step": 1,
+          "action": "バックアップ作成",
+          "method": "POST",
+          "endpoint": "/backup/",
+          "body": {
+            "backup_name": "before_major_change"
+          }
+        },
+        {
+          "step": 2,
+          "action": "変更作業実施",
+          "description": "タスク更新や削除など"
+        },
+        {
+          "step": 3,
+          "action": "問題発生時の復元",
+          "method": "POST",
+          "endpoint": "/backup/{backup_id}/restore"
+        }
+      ]
+    }
+  },
+  "error_handling": {
+    "common_errors": [
+      {
+        "status_code": 400,
+        "error": "Bad Request",
+        "causes": [
+          "必須フィールドの欠落",
+          "無効な値（例: 存在しないstatus値）",
+          "型不一致（例: 数値が期待される場所に文字列）"
+        ]
+      },
+      {
+        "status_code": 404,
+        "error": "Not Found",
+        "causes": [
+          "存在しないタスクIDを指定",
+          "存在しないレビューIDを指定",
+          "存在しないバックアップIDを指定"
+        ]
+      },
+      {
+        "status_code": 422,
+        "error": "Unprocessable Entity",
+        "causes": [
+          "Pydanticバリデーションエラー",
+          "無効なparent_id（階層構造違反）",
+          "循環参照の発生"
+        ]
+      },
+      {
+        "status_code": 500,
+        "error": "Internal Server Error",
+        "causes": [
+          "データベース接続エラー",
+          "Celeryワーカー停止中",
+          "Redis接続エラー"
+        ]
+      }
+    ]
+  }
+}
