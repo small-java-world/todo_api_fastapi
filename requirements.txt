@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+pydantic-settings
+alembic
+celery
+redis
+python-dotenv
+httpx
+pytest
+pytest-asyncio
+flower

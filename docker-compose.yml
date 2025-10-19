@@ -1,0 +1,46 @@
+version: "3"
+services:
+  todo-api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  celery-worker:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - todo-api
+    command: celery -A app.tasks.worker worker -l info
+
+  celery-flower:
+    build: .
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    command: celery -A app.tasks.worker flower --port=5555
+
+volumes:
+  redis_data:
