@@ -7,9 +7,13 @@
 - **階層ID構造**: `REQ-001.TSK-002.SUB-003` 形式の分かりやすいID
 - **三階層管理**: 要件 → タスク → サブタスクの階層構造
 - **RESTful API**: 標準的なREST API設計
-- **包括的テスト**: 50以上のテストケースで品質保証
-- **Docker対応**: コンテナ化による簡単デプロイ
+- **包括的テスト**: 100以上のテストケースで品質保証
+- **Docker/Podman対応**: コンテナ化による簡単デプロイ
 - **TDD開発**: テスト駆動開発による高品質実装
+- **Git統合**: Gitリポジトリとの連携機能
+- **レビュー機能**: コードレビュー管理システム
+- **バックアップ機能**: 自動バックアップとリストア
+- **CAS統合**: Content-Addressable Storageによる効率的なファイル管理
 
 ## 📋 階層ID構造
 
@@ -31,10 +35,17 @@ REQ-001 (ユーザー認証要件)
 - **pytest**: テストフレームワーク
 - **Docker**: コンテナ化
 - **Alembic**: データベースマイグレーション
+- **Celery**: 非同期タスク処理
+- **Redis**: キャッシュ・メッセージブローカー
+- **Git**: バージョン管理統合
+- **mypy**: 静的型チェック
+- **isort**: インポート順序管理
 
 ## 🚀 クイックスタート
 
 ### 1. 環境構築
+
+#### Docker使用の場合
 ```bash
 # リポジトリクローン
 git clone <repository-url>
@@ -43,6 +54,25 @@ cd todo_api_fastapi
 # Docker Composeで起動
 docker-compose up -d
 ```
+
+#### Podman使用の場合
+```bash
+# リポジトリクローン
+git clone <repository-url>
+cd todo_api_fastapi
+
+# Podmanで起動 (Linux/macOS)
+./start-podman.sh
+
+# または PowerShell (Windows)
+.\start-podman.ps1
+```
+
+**Podmanの利点:**
+- **ルートレス**: 管理者権限不要でコンテナを実行
+- **セキュリティ**: より安全なコンテナ実行環境
+- **互換性**: Docker Composeファイルと互換
+- **軽量**: より軽量なリソース使用
 
 ### 2. 動作確認
 ```bash
@@ -62,12 +92,26 @@ curl -X POST http://localhost:8000/tasks/ \
 ```
 
 ### 3. テスト実行
+
+#### Docker使用の場合
 ```bash
 # 全テスト実行
 docker-compose exec todo-api python -m pytest tests/ -v
 
 # 統合テストのみ
 docker-compose exec todo-api python -m pytest tests/test_integration.py -v
+```
+
+#### Podman使用の場合
+```bash
+# 全テスト実行 (Linux/macOS)
+./test-podman.sh
+
+# または PowerShell (Windows)
+.\test-podman.ps1
+
+# 個別テスト実行
+podman-compose -f podman-compose.yml exec todo-api python -m pytest tests/test_integration.py -v
 ```
 
 ## 📚 API仕様
@@ -82,6 +126,13 @@ docker-compose exec todo-api python -m pytest tests/test_integration.py -v
 | GET | `/tasks/{id}` | タスク詳細取得 |
 | PUT | `/tasks/{id}` | タスク更新 |
 | DELETE | `/tasks/{id}` | タスク削除 |
+| GET | `/tasks/tree/` | タスクツリー表示 |
+| GET | `/reviews/` | レビュー一覧取得 |
+| POST | `/reviews/` | レビュー作成 |
+| GET | `/artifacts/` | アーティファクト一覧 |
+| POST | `/artifacts/` | アーティファクト作成 |
+| GET | `/backup/` | バックアップ一覧 |
+| POST | `/backup/` | バックアップ作成 |
 
 ### レスポンス例
 
@@ -118,10 +169,13 @@ docker-compose exec todo-api python -m pytest tests/test_integration.py -v
 ## 🧪 テスト構成
 
 ### テストカテゴリ
-- **単体テスト**: 8テスト（基本CRUD操作）
-- **統合テスト**: 9テスト（階層構造ワークフロー）
+- **単体テスト**: 55テスト（基本CRUD操作・サービス層）
+- **統合テスト**: 17テスト（階層構造ワークフロー）
 - **データベーステスト**: 8テスト（制約・一貫性）
-- **エラーテスト**: 17テスト（バリデーション）
+- **レビューテスト**: 22テスト（レビュー機能）
+- **バックアップテスト**: 16テスト（バックアップ機能）
+- **Git統合テスト**: 26テスト（Git連携）
+- **CAS統合テスト**: 15テスト（ファイル管理）
 - **パフォーマンステスト**: 8テスト（大量データ処理）
 
 ### テスト実行
@@ -131,8 +185,17 @@ docker-compose exec todo-api python -m pytest tests/ -v
 
 # カテゴリ別テスト
 docker-compose exec todo-api python -m pytest tests/test_integration.py -v
+docker-compose exec todo-api python -m pytest tests/test_database_integration.py -v
+docker-compose exec todo-api python -m pytest tests/test_review_service_ut.py -v
+docker-compose exec todo-api python -m pytest tests/test_backup_service_ut.py -v
+docker-compose exec todo-api python -m pytest tests/test_git_service_ut.py -v
 docker-compose exec todo-api python -m pytest tests/test_performance.py -v
-docker-compose exec todo-api python -m pytest tests/test_error_cases.py -v
+
+# 型チェック
+docker-compose exec todo-api python -m mypy app/ --ignore-missing-imports --explicit-package-bases
+
+# インポート順序チェック
+docker-compose exec todo-api python -m isort --check-only app/ --settings-path pyproject.toml
 ```
 
 ## 📊 パフォーマンス仕様
@@ -145,9 +208,17 @@ docker-compose exec todo-api python -m pytest tests/test_error_cases.py -v
 ## 🔧 開発環境
 
 ### 必要な環境
+
+#### Docker使用の場合
 - Docker & Docker Compose
 - Python 3.10+ (ローカル開発時)
 - Git
+
+#### Podman使用の場合
+- Podman & podman-compose
+- Python 3.10+ (ローカル開発時)
+- Git
+- (Windows) PowerShell または WSL2
 
 ### 開発ワークフロー
 ```bash
@@ -170,26 +241,59 @@ git push origin feature/new-feature
 
 ```
 todo_api_fastapi/
-├── app/                    # アプリケーションコード
-│   ├── api/               # APIエンドポイント
-│   ├── core/              # 設定・データベース
-│   ├── models/            # データベースモデル
-│   ├── schemas/           # Pydanticスキーマ
-│   ├── services/          # ビジネスロジック
-│   └── tasks/             # Celeryタスク
-├── tests/                 # テストコード
-│   ├── test_tasks.py      # 単体テスト
-│   ├── test_integration.py # 統合テスト
-│   ├── test_database_integration.py # データベーステスト
-│   ├── test_error_cases.py # エラーテスト
-│   └── test_performance.py # パフォーマンステスト
-├── migrations/            # Alembicマイグレーション
-├── docker-compose.yml     # Docker Compose設定
-├── Dockerfile            # Docker設定
-├── requirements.txt      # Python依存関係
-├── API仕様書.md          # API仕様書
-├── 技術仕様書.md         # 技術仕様書
-└── README.md             # このファイル
+├── app/                           # アプリケーションコード
+│   ├── api/                      # APIエンドポイント
+│   │   ├── tasks.py              # タスクAPI
+│   │   ├── tree.py               # ツリー表示API
+│   │   ├── reviews.py            # レビューAPI
+│   │   ├── artifacts.py          # アーティファクトAPI
+│   │   ├── backup.py             # バックアップAPI
+│   │   └── storage.py            # ストレージAPI
+│   ├── celery_tasks/             # Celeryタスク
+│   │   ├── tasks.py              # 非同期タスク
+│   │   ├── backup_tasks.py       # バックアップタスク
+│   │   └── worker.py             # Celeryワーカー
+│   ├── core/                     # 設定・データベース
+│   │   ├── config.py             # 設定管理
+│   │   └── database.py           # データベース接続
+│   ├── models/                   # データベースモデル
+│   │   ├── task.py               # タスクモデル
+│   │   ├── review.py             # レビューモデル
+│   │   ├── artifact_model.py     # アーティファクトモデル
+│   │   └── comment.py             # コメントモデル
+│   ├── schemas/                  # Pydanticスキーマ
+│   │   ├── task_schema.py        # タスクスキーマ
+│   │   ├── review_schema.py      # レビュースキーマ
+│   │   ├── backup_schema.py      # バックアップスキーマ
+│   │   └── artifact.py           # アーティファクトスキーマ
+│   └── services/                 # ビジネスロジック
+│       ├── task_service.py       # タスクサービス
+│       ├── review_service.py     # レビューサービス
+│       ├── backup_service.py     # バックアップサービス
+│       ├── git_service.py        # Gitサービス
+│       ├── cas_service.py        # CASサービス
+│       └── hierarchical_id_service.py # 階層IDサービス
+├── tests/                        # テストコード
+│   ├── test_git_service_ut.py    # Gitサービス単体テスト
+│   ├── test_config_ut.py         # 設定単体テスト
+│   ├── test_hierarchical_id_service_ut.py # 階層ID単体テスト
+│   ├── test_review_service_ut.py # レビューサービス単体テスト
+│   ├── test_backup_service_ut.py # バックアップサービス単体テスト
+│   ├── test_integration.py       # 統合テスト
+│   ├── test_database_integration.py # データベース統合テスト
+│   └── test_performance.py       # パフォーマンステスト
+├── docker-compose.yml            # Docker Compose設定
+├── podman-compose.yml            # Podman Compose設定
+├── Dockerfile                    # Docker設定
+├── start-podman.sh              # Podman起動スクリプト (Linux/macOS)
+├── stop-podman.sh               # Podman停止スクリプト (Linux/macOS)
+├── test-podman.sh               # Podmanテストスクリプト (Linux/macOS)
+├── start-podman.ps1             # Podman起動スクリプト (Windows)
+├── stop-podman.ps1              # Podman停止スクリプト (Windows)
+├── test-podman.ps1              # Podmanテストスクリプト (Windows)
+├── requirements.txt              # Python依存関係
+├── pyproject.toml               # プロジェクト設定
+└── README.md                    # このファイル
 ```
 
 ## 🔒 セキュリティ
