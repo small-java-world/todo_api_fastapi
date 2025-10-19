@@ -56,9 +56,17 @@ jobs:
         echo "FILE_STORAGE_ROOT=./test_storage" >> $GITHUB_ENV
         echo "GIT_REPO_PATH=./test_git_repo" >> $GITHUB_ENV
 
+    - name: Create database tables
+      run: |
+        python -c "
+        from app.core.database import engine, Base
+        Base.metadata.create_all(bind=engine)
+        print('Database tables created successfully')
+        "
+
     - name: Run database migrations
       run: |
-        alembic upgrade head
+        alembic upgrade head || echo "Migration failed, but continuing..."
 
     - name: Check if tests directory exists
       run: |

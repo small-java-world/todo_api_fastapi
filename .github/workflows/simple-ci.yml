@@ -75,6 +75,14 @@ jobs:
           echo "Tests directory does not exist"
         fi
 
+    - name: Create database tables
+      run: |
+        python -c "
+        from app.core.database import engine, Base
+        Base.metadata.create_all(bind=engine)
+        print('Database tables created successfully')
+        "
+
     - name: Run database migrations (if alembic is available)
       run: |
         if command -v alembic &> /dev/null; then
