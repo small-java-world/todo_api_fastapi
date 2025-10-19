@@ -1,0 +1,218 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11, 3.12]
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-cov pytest-xdist
+
+    - name: Set up test environment
+      run: |
+        echo "DATABASE_URL=sqlite:///./test.db" >> $GITHUB_ENV
+        echo "REDIS_URL=redis://localhost:6379/0" >> $GITHUB_ENV
+        echo "API_TITLE=TODO API Test" >> $GITHUB_ENV
+        echo "API_VERSION=1.0.0" >> $GITHUB_ENV
+        echo "CAS_ROOT_PATH=./test_blobs" >> $GITHUB_ENV
+        echo "FILE_STORAGE_ROOT=./test_storage" >> $GITHUB_ENV
+        echo "GIT_REPO_PATH=./test_git_repo" >> $GITHUB_ENV
+
+    - name: Create test directories
+      run: |
+        mkdir -p test_blobs test_storage test_git_repo
+
+    - name: Run database migrations
+      run: |
+        alembic upgrade head
+
+    - name: Run unit tests with coverage
+      run: |
+        pytest tests/test_*_ut.py -v --cov=app --cov-report=xml --cov-report=html --cov-report=term --junitxml=test-results.xml
+
+    - name: Run specific unit test categories
+      run: |
+        echo "Running backup service unit tests..."
+        pytest tests/test_backup_service_ut.py -v
+        
+        echo "Running review service unit tests..."
+        pytest tests/test_review_service_ut.py -v
+        
+        echo "Running hierarchical ID service unit tests..."
+        pytest tests/test_hierarchical_id_service_ut.py -v
+        
+        echo "Running CAS service unit tests..."
+        pytest tests/test_cas_service_ut.py -v
+        
+        echo "Running config unit tests..."
+        pytest tests/test_config_ut.py -v
+        
+        echo "Running enhanced task service unit tests..."
+        pytest tests/test_enhanced_task_service_ut.py -v
+        
+        echo "Running TDD hook service unit tests..."
+        pytest tests/test_tdd_hook_service_ut.py -v
+        
+        echo "Running git service unit tests..."
+        pytest tests/test_git_service_ut.py -v
+
+    - name: Run concurrent operation tests
+      run: |
+        pytest tests/test_concurrent_operations_ut.py -v
+
+    - name: Run error case tests
+      run: |
+        pytest tests/test_error_cases_enhanced.py -v
+
+    - name: Run status transition tests
+      run: |
+        pytest tests/test_status_transitions.py -v
+        pytest tests/test_status_transition_ut.py -v
+
+    - name: Run navigation tests
+      run: |
+        pytest tests/test_hierarchical_navigation.py -v
+
+    - name: Run search filter tests
+      run: |
+        pytest tests/test_search_filter.py -v
+
+    - name: Run comments history tests
+      run: |
+        pytest tests/test_comments_history_ut.py -v
+
+    - name: Run tree API tests
+      run: |
+        pytest tests/test_tree_api.py -v
+
+    - name: Run CAS artifacts tests
+      run: |
+        pytest tests/test_cas_artifacts.py -v
+
+    - name: Run storage management tests
+      run: |
+        pytest tests/test_storage_management.py -v
+
+    - name: Run updated_at management tests
+      run: |
+        pytest tests/test_updated_at_management.py -v
+
+    - name: Run review management tests
+      run: |
+        pytest tests/test_review_management.py -v
+
+    - name: Run hierarchical review management tests
+      run: |
+        pytest tests/test_hierarchical_review_management.py -v
+
+    - name: Run review API unit tests
+      run: |
+        pytest tests/test_review_api_ut.py -v
+
+    - name: Run all unit tests summary
+      run: |
+        pytest tests/test_*_ut.py --collect-only -q | grep -c "test session starts" || echo "No unit tests found"
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: unit-test-results-${{ matrix.python-version }}
+        path: |
+          htmlcov/
+          coverage.xml
+          test-results.xml
+          .pytest_cache/
+
+    - name: Comment PR with test results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Read test results
+          let testResults = '';
+          try {
+            const testResultsPath = 'test-results.xml';
+            if (fs.existsSync(testResultsPath)) {
+              testResults = fs.readFileSync(testResultsPath, 'utf8');
+            }
+          } catch (error) {
+            console.log('Could not read test results:', error);
+          }
+          
+          // Create comment
+          const comment = `## 🧪 Unit Test Results
+          
+          **Python Version**: ${{ matrix.python-version }}
+          **Status**: ${{ job.status }}
+          
+          ### Test Summary
+          - All unit tests have been executed
+          - Coverage report generated
+          - Test results uploaded as artifacts
+          
+          ### Coverage
+          Coverage report is available in the artifacts section.
+          
+          ### Next Steps
+          - Review any failing tests
+          - Check coverage report for areas needing more tests
+          - Update tests if needed`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
