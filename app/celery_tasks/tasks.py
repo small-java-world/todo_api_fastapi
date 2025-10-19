@@ -3,10 +3,10 @@ from typing import Any, Dict
 
 from celery import current_task
 
+from app.celery_tasks.worker import celery_app
 from app.core.database import SessionLocal
 from app.models.task import Task, TaskType
 from app.services.task_service import TaskService
-from app.celery_tasks.worker import celery_app
 
 logger = logging.getLogger(__name__)
 
