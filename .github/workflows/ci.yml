@@ -144,11 +144,11 @@ jobs:
 
     - name: Run black
       run: |
-        black --check app/
+        black --check app/ --config pyproject.toml
 
     - name: Run isort
       run: |
-        isort --check-only app/
+        isort --check-only app/ --settings-path pyproject.toml
 
     - name: Run mypy
       run: |
