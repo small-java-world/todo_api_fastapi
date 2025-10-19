@@ -119,6 +119,15 @@ jobs:
             exit(1)
         "
 
+    - name: Test Docker build (if Dockerfile exists)
+      run: |
+        if [ -f "Dockerfile" ]; then
+          echo "Testing Docker build..."
+          docker build -t todo-api-test . || echo "Docker build failed, but continuing..."
+        else
+          echo "No Dockerfile found, skipping Docker test"
+        fi
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()

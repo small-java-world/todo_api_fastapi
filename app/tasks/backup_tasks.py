@@ -1,6 +1,7 @@
 from app.tasks.worker import celery_app
 from app.core.database import SessionLocal
 from app.services.backup_service import BackupService
+from pathlib import Path
 import logging
 
 logger = logging.getLogger(__name__)

@@ -225,6 +225,6 @@ jobs:
       run: |
         docker build -t todo-api:latest .
 
-    - name: Test Docker Compose
+    - name: Test Docker image
       run: |
-        docker-compose config
+        docker run --rm todo-api:latest python -c "from app.main import app; print('Application imports successfully')"
