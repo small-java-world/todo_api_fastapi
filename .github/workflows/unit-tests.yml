@@ -76,90 +76,142 @@ jobs:
 
     - name: Run unit tests with coverage
       run: |
-        pytest tests/test_*_ut.py -v --cov=app --cov-report=xml --cov-report=html --cov-report=term --junitxml=test-results.xml
+        pytest tests/ -k "not integration" -v --cov=app --cov-report=xml --cov-report=html --cov-report=term --junitxml=test-results.xml
 
     - name: Run specific unit test categories
       run: |
-        echo "Running backup service unit tests..."
-        pytest tests/test_backup_service_ut.py -v
+        # Run backup service unit tests if they exist
+        if [ -f "tests/test_backup_service_ut.py" ]; then
+          echo "Running backup service unit tests..."
+          pytest tests/test_backup_service_ut.py -v
+        fi
         
-        echo "Running review service unit tests..."
-        pytest tests/test_review_service_ut.py -v
+        # Run review service unit tests if they exist
+        if [ -f "tests/test_review_service_ut.py" ]; then
+          echo "Running review service unit tests..."
+          pytest tests/test_review_service_ut.py -v
+        fi
         
-        echo "Running hierarchical ID service unit tests..."
-        pytest tests/test_hierarchical_id_service_ut.py -v
+        # Run hierarchical ID service unit tests if they exist
+        if [ -f "tests/test_hierarchical_id_service_ut.py" ]; then
+          echo "Running hierarchical ID service unit tests..."
+          pytest tests/test_hierarchical_id_service_ut.py -v
+        fi
         
-        echo "Running CAS service unit tests..."
-        pytest tests/test_cas_service_ut.py -v
+        # Run CAS service unit tests if they exist
+        if [ -f "tests/test_cas_service_ut.py" ]; then
+          echo "Running CAS service unit tests..."
+          pytest tests/test_cas_service_ut.py -v
+        fi
         
-        echo "Running config unit tests..."
-        pytest tests/test_config_ut.py -v
+        # Run config unit tests if they exist
+        if [ -f "tests/test_config_ut.py" ]; then
+          echo "Running config unit tests..."
+          pytest tests/test_config_ut.py -v
+        fi
         
-        echo "Running enhanced task service unit tests..."
-        pytest tests/test_enhanced_task_service_ut.py -v
+        # Run enhanced task service unit tests if they exist
+        if [ -f "tests/test_enhanced_task_service_ut.py" ]; then
+          echo "Running enhanced task service unit tests..."
+          pytest tests/test_enhanced_task_service_ut.py -v
+        fi
         
-        echo "Running TDD hook service unit tests..."
-        pytest tests/test_tdd_hook_service_ut.py -v
+        # Run TDD hook service unit tests if they exist
+        if [ -f "tests/test_tdd_hook_service_ut.py" ]; then
+          echo "Running TDD hook service unit tests..."
+          pytest tests/test_tdd_hook_service_ut.py -v
+        fi
         
-        echo "Running git service unit tests..."
-        pytest tests/test_git_service_ut.py -v
+        # Run git service unit tests if they exist
+        if [ -f "tests/test_git_service_ut.py" ]; then
+          echo "Running git service unit tests..."
+          pytest tests/test_git_service_ut.py -v
+        fi
 
-    - name: Run concurrent operation tests
+    - name: Run additional unit tests
       run: |
-        pytest tests/test_concurrent_operations_ut.py -v
-
-    - name: Run error case tests
-      run: |
-        pytest tests/test_error_cases_enhanced.py -v
-
-    - name: Run status transition tests
-      run: |
-        pytest tests/test_status_transitions.py -v
-        pytest tests/test_status_transition_ut.py -v
-
-    - name: Run navigation tests
-      run: |
-        pytest tests/test_hierarchical_navigation.py -v
-
-    - name: Run search filter tests
-      run: |
-        pytest tests/test_search_filter.py -v
-
-    - name: Run comments history tests
-      run: |
-        pytest tests/test_comments_history_ut.py -v
-
-    - name: Run tree API tests
-      run: |
-        pytest tests/test_tree_api.py -v
-
-    - name: Run CAS artifacts tests
-      run: |
-        pytest tests/test_cas_artifacts.py -v
-
-    - name: Run storage management tests
-      run: |
-        pytest tests/test_storage_management.py -v
-
-    - name: Run updated_at management tests
-      run: |
-        pytest tests/test_updated_at_management.py -v
-
-    - name: Run review management tests
-      run: |
-        pytest tests/test_review_management.py -v
-
-    - name: Run hierarchical review management tests
-      run: |
-        pytest tests/test_hierarchical_review_management.py -v
-
-    - name: Run review API unit tests
-      run: |
-        pytest tests/test_review_api_ut.py -v
+        # Run concurrent operation tests if they exist
+        if [ -f "tests/test_concurrent_operations_ut.py" ]; then
+          echo "Running concurrent operation tests..."
+          pytest tests/test_concurrent_operations_ut.py -v
+        fi
+        
+        # Run error case tests if they exist
+        if [ -f "tests/test_error_cases_enhanced.py" ]; then
+          echo "Running error case tests..."
+          pytest tests/test_error_cases_enhanced.py -v
+        fi
+        
+        # Run status transition tests if they exist
+        if [ -f "tests/test_status_transition_ut.py" ]; then
+          echo "Running status transition tests..."
+          pytest tests/test_status_transition_ut.py -v
+        fi
+        
+        # Run navigation tests if they exist
+        if [ -f "tests/test_hierarchical_navigation.py" ]; then
+          echo "Running navigation tests..."
+          pytest tests/test_hierarchical_navigation.py -v
+        fi
+        
+        # Run search filter tests if they exist
+        if [ -f "tests/test_search_filter.py" ]; then
+          echo "Running search filter tests..."
+          pytest tests/test_search_filter.py -v
+        fi
+        
+        # Run comments history tests if they exist
+        if [ -f "tests/test_comments_history_ut.py" ]; then
+          echo "Running comments history tests..."
+          pytest tests/test_comments_history_ut.py -v
+        fi
+        
+        # Run tree API tests if they exist
+        if [ -f "tests/test_tree_api.py" ]; then
+          echo "Running tree API tests..."
+          pytest tests/test_tree_api.py -v
+        fi
+        
+        # Run CAS artifacts tests if they exist
+        if [ -f "tests/test_cas_artifacts.py" ]; then
+          echo "Running CAS artifacts tests..."
+          pytest tests/test_cas_artifacts.py -v
+        fi
+        
+        # Run storage management tests if they exist
+        if [ -f "tests/test_storage_management.py" ]; then
+          echo "Running storage management tests..."
+          pytest tests/test_storage_management.py -v
+        fi
+        
+        # Run updated_at management tests if they exist
+        if [ -f "tests/test_updated_at_management.py" ]; then
+          echo "Running updated_at management tests..."
+          pytest tests/test_updated_at_management.py -v
+        fi
+        
+        # Run review management tests if they exist
+        if [ -f "tests/test_review_management.py" ]; then
+          echo "Running review management tests..."
+          pytest tests/test_review_management.py -v
+        fi
+        
+        # Run hierarchical review management tests if they exist
+        if [ -f "tests/test_hierarchical_review_management.py" ]; then
+          echo "Running hierarchical review management tests..."
+          pytest tests/test_hierarchical_review_management.py -v
+        fi
+        
+        # Run review API unit tests if they exist
+        if [ -f "tests/test_review_api_ut.py" ]; then
+          echo "Running review API unit tests..."
+          pytest tests/test_review_api_ut.py -v
+        fi
 
     - name: Run all unit tests summary
       run: |
-        pytest tests/test_*_ut.py --collect-only -q | grep -c "test session starts" || echo "No unit tests found"
+        echo "Running all available unit tests..."
+        pytest tests/ -k "not integration" --collect-only -q | grep -c "test session starts" || echo "No unit tests found"
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
